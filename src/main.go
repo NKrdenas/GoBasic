@@ -5,29 +5,32 @@ import (
 	"log"
 	"strconv"
 	"strings"
+
+	pk "GoBasic/src/mypackage"
 )
 
 func main() {
-	// normalFunction("Hola mundo")
-	// tripleArgument(78, -12, "<NAME>")
-	// // manejoVariables()
-	// // fmtFunction()
-	// value := returnValue(2)
-	// fmt.Println("\nvalue:", value)
-	// value1, _ := doubleReturn(2)
-	// fmt.Println("Value 1:", value1)
-	// forConditional()
-	// forWhile()
-	// forForever()
-	// ifConditional()
-	// stringToInt()
-	// parDetection(3248234209)
-	// switchConditional()
-	// keyWords()
-	// arraysAndSlice()
-	// sliceRange()
-	// isPalindromo("Amor a Roma")
-	maps()
+	var carro pk.CarPublic
+	carro.Brand = "Buggati"
+	carro.Year = 2020
+	fmt.Println(carro)
+
+	pk.PrintMessage()
+}
+
+type car struct {
+	brand string
+	year  int
+}
+
+func structs() {
+	myCar := car{brand: "Ford", year: 2020}
+	fmt.Println(myCar)
+
+	//Otra manera
+	var otherCar car
+	otherCar.brand = "Koenigsegg"
+	fmt.Println(otherCar)
 }
 
 func maps() {
@@ -43,8 +46,11 @@ func maps() {
 	}
 
 	//Encontrar un valor
-	value := m["Josep"]
-	fmt.Println(value)
+	value, ok := m["Josep"]
+	fmt.Println(value, ok)
+
+	value2, ok2 := m["Jose"]
+	fmt.Println(value2, ok2)
 }
 
 func isPalindromo(text string) {

@@ -3,20 +3,203 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
-	pk "GoBasic/src/mypackage"
+	"github.com/labstack/echo"
 )
 
 func main() {
-	var carro pk.CarPublic
-	carro.Brand = "Buggati"
-	carro.Year = 2020
-	fmt.Println(carro)
-
-	pk.PrintMessage()
+	// go modules
+	e := echo.New()
+	//Ruta
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.Logger.Fatal(e.Start(":1323"))
 }
+
+//Range, Close y Select
+
+func rangeCloseSelect() {
+	c := make(chan string, 2)
+	c <- "Mensaje 1"
+	c <- "Mensaje 2"
+
+	fmt.Println(len(c), cap(c))
+
+	//Range y Close
+	close(c)
+
+	// c <- "Mensaje 3"
+
+	for message := range c {
+		fmt.Println(message)
+	}
+
+	// Select
+	email1 := make(chan string)
+	email2 := make(chan string)
+
+	go message("mensaje1", email1)
+	go message("mensaje2", email2)
+
+	for i := 0; i < 2; i++ {
+		select {
+		case m1 := <-email1:
+			fmt.Println("Email recibido de email1", m1)
+		case m2 := <-email2:
+			fmt.Println("Email recibido de email2", m2)
+		}
+	}
+
+}
+
+func message(text string, c chan string) {
+	c <- text
+}
+
+//Channels
+
+func channels() {
+	c := make(chan string, 1)
+
+	fmt.Println("Hello")
+
+	go say2("Bye", c)
+
+	fmt.Println(<-c)
+}
+
+func say2(text string, c chan<- string) {
+	c <- text
+}
+
+//Go routines
+
+func goRoutine() {
+	var wg sync.WaitGroup
+
+	fmt.Println("Hello")
+	wg.Add(1)
+
+	go say("world", &wg)
+
+	wg.Wait()
+
+	go func(text string) {
+		fmt.Println(text)
+	}("Adios")
+
+	time.Sleep(time.Second * 1)
+}
+
+func say(text string, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	fmt.Println(text)
+}
+
+//Interfaces
+
+func interfaces() {
+	myCuadrado := cuadrado{base: 2}
+	myRectangulo := rectangulo{base: 3, altura: 5}
+
+	calculate(myCuadrado)
+	calculate(myRectangulo)
+
+	//Lista de interfaces
+	myIntercace := []interface{}{"Hola", 12, 4.9}
+	fmt.Println(myIntercace...)
+}
+
+type figuras2D interface {
+	area() float64
+}
+
+type cuadrado struct {
+	base float64
+}
+
+type rectangulo struct {
+	base   float64
+	altura float64
+}
+
+func calculate(f figuras2D) {
+	fmt.Println("Area:", f.area())
+}
+
+func (c cuadrado) area() float64 {
+	return c.base * c.base
+}
+
+func (r rectangulo) area() float64 {
+	return r.base * r.altura
+}
+
+//stringers
+
+func (myPC pc) String() string {
+	return fmt.Sprintf("Tengo %d GB RAM, %d GB de Disco, y es una %s", myPC.ram, myPC.disk, myPC.brand)
+}
+
+func stringers() {
+	myPC := pc{ram: 16, brand: "msi", disk: 100}
+	fmt.Println(myPC)
+}
+
+type pc struct {
+	ram   int
+	disk  int
+	brand string
+}
+
+//pointers
+
+func (myPC pc) ping() {
+	fmt.Println(myPC.brand, "Pong")
+}
+
+func (myPC *pc) duplicateRam() {
+	myPC.ram = myPC.ram * 2
+}
+
+func pointers() {
+	a := 50
+	b := &a
+	fmt.Println(a)
+	fmt.Println(b)  // Direccion de memoria de a
+	fmt.Println(*b) // Valor de la direccion de memoria apuntada
+
+	*b = 100
+	fmt.Println(a) // *b = a, apuntan al mismo lugar de la memoria
+	myPC := pc{ram: 16, disk: 20, brand: "msi"}
+	fmt.Println(myPC)
+	myPC.ping()
+
+	fmt.Println(myPC)
+	myPC.duplicateRam()
+
+	fmt.Println(myPC)
+	myPC.duplicateRam()
+	fmt.Println(myPC)
+}
+
+// func packageStructs() {
+// 	var carro pk.CarPublic
+// 	carro.Brand = "Buggati"
+// 	carro.Year = 2020
+// 	fmt.Println(carro)
+
+// 	pk.PrintMessage("Hola Platzi")
+
+// 	// pk.printMessage("Hola") No se puede utilizar ya que es privado
+// }
 
 type car struct {
 	brand string

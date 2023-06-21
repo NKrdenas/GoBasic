@@ -14,6 +14,10 @@ type carPrivate struct {
 }
 
 //PrintMessage
-func PrintMessage() {
-	fmt.Println("Hola")
+func PrintMessage(text string) {
+	fmt.Println(text)
+}
+
+func printMessage(text string) {
+	fmt.Println(text)
 }
